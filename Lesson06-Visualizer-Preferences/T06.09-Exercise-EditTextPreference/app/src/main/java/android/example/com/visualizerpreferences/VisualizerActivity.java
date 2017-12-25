@@ -48,7 +48,6 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
         setupPermissions();
     }
 
-    // TODO (2) Modify the setupSharedPreferences method and onSharedPreferencesChanged method to
     // properly update the minSizeScale, assuming a proper numerical value is saved in shared preferences
     private void setupSharedPreferences() {
         // Get all of the values from shared preferences to set it up
@@ -61,6 +60,7 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
                 getResources().getBoolean(R.bool.pref_show_treble_default)));
         mVisualizerView.setMinSizeScale(1);
         loadColorFromPreferences(sharedPreferences);
+        loadSizeFromPreferences(sharedPreferences);
         // Register the listener
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -68,6 +68,12 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
     private void loadColorFromPreferences(SharedPreferences sharedPreferences) {
         mVisualizerView.setColor(sharedPreferences.getString(getString(R.string.pref_color_key),
                 getString(R.string.pref_color_red_value)));
+    }
+
+    private void loadSizeFromPreferences(SharedPreferences preferences) {
+        float minSize = Float.parseFloat(preferences.getString(getString(R.string.pref_size_key),
+                getString(R.string.pref_size_default)));
+        mVisualizerView.setMinSizeScale(minSize);
     }
 
     // Updates the screen if the shared preferences change. This method is required when you make a
@@ -82,6 +88,8 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
             mVisualizerView.setShowTreble(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_show_treble_default)));
         } else if (key.equals(getString(R.string.pref_color_key))) {
             loadColorFromPreferences(sharedPreferences);
+        } else if (key.equals(getString(R.string.pref_size_key))) {
+            loadSizeFromPreferences(sharedPreferences);
         }
     }
 
@@ -140,7 +148,7 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
             mAudioInputReader.restart();
         }
     }
-    
+
     /**
      * App Permissions for Audio
      **/
@@ -150,7 +158,7 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
             // And if we're on SDK M or later...
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // Ask again, nicely, for the permissions.
-                String[] permissionsWeNeed = new String[]{ Manifest.permission.RECORD_AUDIO };
+                String[] permissionsWeNeed = new String[]{Manifest.permission.RECORD_AUDIO};
                 requestPermissions(permissionsWeNeed, MY_PERMISSION_RECORD_AUDIO_REQUEST_CODE);
             }
         } else {
